@@ -24,6 +24,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#if 1
+// 20200319 taylor
+#include <stdio.h>
+#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +62,10 @@ static void MX_ETH_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
+#if 1
+// 20200319 taylor
+int __io_putchar(int ch);
+#endif
 
 /* USER CODE END PFP */
 
@@ -101,8 +109,14 @@ int main(void)
 
   #if 1
   // 20200319 taylor
-  uint8_t string[]="Hello, NUCLEO-F429ZI!";
+  uint8_t string[]="Hello, NUCLEO-F429ZI!\r\n";
+  #if 1
+  // 20200319 taylor
+  printf("Compiled %s(%s)\r\n", __DATE__, __TIME__);
+  printf("%s", string);
+  #else
   HAL_UART_Transmit(&huart3, string, sizeof(string), 1000);
+  #endif
   #endif
   /* USER CODE END 2 */
 
@@ -321,6 +335,22 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+#if 1
+// 20200319 taylor
+/**
+  * @brief  Retargets the C library printf function to the USART.
+  * @param  None
+  * @retval None
+  */
+int __io_putchar(int ch)
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the USART3 and Loop until the end of transmission */
+	uint8_t tx = ch;
+	HAL_UART_Transmit(&huart3, &tx, 1, 1000);
+	return ch;
+}
+#endif
 
 /* USER CODE END 4 */
 
