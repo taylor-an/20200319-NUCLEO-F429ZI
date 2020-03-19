@@ -99,6 +99,11 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
 
+  #if 1
+  // 20200319 taylor
+  uint8_t string[]="Hello, NUCLEO-F429ZI!";
+  HAL_UART_Transmit(&huart3, string, sizeof(string), 1000);
+  #endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
