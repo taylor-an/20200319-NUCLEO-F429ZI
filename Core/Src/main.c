@@ -370,13 +370,13 @@ int __io_putchar(int ch)
 #if 1
 // 20200320 taylor
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_InputTask */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the inputTask thread.
   * @param  argument: Not used 
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
+/* USER CODE END Header_InputTask */
 void InputTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
