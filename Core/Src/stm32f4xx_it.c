@@ -43,6 +43,10 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 
+#if 1
+// 20200320 taylor
+volatile GPIO_PinState USER_Btn_PinState;
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -204,6 +208,13 @@ void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
 
+  #if 1
+  // 20200320 taylor
+  if(USER_Btn_Pin == __HAL_GPIO_EXTI_GET_FLAG(USER_Btn_Pin))
+  {
+    USER_Btn_PinState = HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin);
+  }
+  #endif
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
@@ -212,29 +223,6 @@ void EXTI15_10_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-#if 1
-// 20200319 taylor
-volatile GPIO_PinState USER_Btn_PinState;
 
-void EXTI15_10_IRQHandler(void)
-{
-  #if 0
-  // 20200320 taylor
-  printf("%s(%d)\r\n", __FILE__, __LINE__);
-  #endif
-
-  if(USER_Btn_Pin == __HAL_GPIO_EXTI_GET_FLAG(USER_Btn_Pin))
-  {
-    USER_Btn_PinState = HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin);
-    
-    #if 0
-    // 20200320 taylor
-    printf("USER_Btn_PinState = %d\r\n", USER_Btn_PinState);
-    #endif
-
-    HAL_GPIO_EXTI_IRQHandler(USER_Btn_Pin);
-  }
-}
-#endif
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
