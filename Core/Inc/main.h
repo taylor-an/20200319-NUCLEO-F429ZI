@@ -32,6 +32,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#if 1
+// 20200319 taylor
+#include <stdio.h>
+#endif
 
 /* USER CODE END Includes */
 

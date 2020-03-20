@@ -24,10 +24,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#if 1
-// 20200319 taylor
-#include <stdio.h>
-#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,6 +114,13 @@ int main(void)
   HAL_UART_Transmit(&huart3, string, sizeof(string), 1000);
   #endif
   #endif
+
+  #if 1
+  // 20200320 taylor
+  GPIO_PinState User_BtnGet;
+  GPIO_PinState User_BtnGetPrevious;
+  extern GPIO_PinState USER_Btn_PinState;
+  #endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,6 +130,19 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    User_BtnGet = USER_Btn_PinState;
+    if(User_BtnGet == GPIO_PIN_SET && User_BtnGetPrevious == GPIO_PIN_RESET)
+    {
+      printf("GPIO_PIN_SET\r\n");
+    }
+    else if(User_BtnGet == GPIO_PIN_RESET && User_BtnGetPrevious == GPIO_PIN_SET)
+    {
+      printf("GPIO_PIN_RESET\r\n");
+    }
+    User_BtnGetPrevious = User_BtnGet;
+    
+    HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+    HAL_Delay(100);
   }
   /* USER CODE END 3 */
 }
@@ -306,11 +322,21 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
 
+#if 1
+  // 20200319 taylor
+  /*Configure GPIO pin : USER_Btn_Pin */
+  GPIO_InitStruct.Pin = USER_Btn_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+#else
   /*Configure GPIO pin : USER_Btn_Pin */
   GPIO_InitStruct.Pin = USER_Btn_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
+#endif
 
   /*Configure GPIO pins : LD1_Pin LD3_Pin LD2_Pin */
   GPIO_InitStruct.Pin = LD1_Pin|LD3_Pin|LD2_Pin;
