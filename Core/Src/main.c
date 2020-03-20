@@ -379,7 +379,6 @@ int __io_putchar(int ch)
 /* USER CODE END Header_InputTask */
 void InputTask(void *argument)
 {
-  /* USER CODE BEGIN 5 */
 
 #if 1
   // 20200320 taylor
@@ -406,7 +405,7 @@ void InputTask(void *argument)
     HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
     osDelay(100);
   }
-  /* USER CODE END 5 */ 
+
 }
 #endif
 
