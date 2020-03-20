@@ -125,12 +125,6 @@ int main(void)
   #endif
   #endif
 
-  #if 1
-  // 20200320 taylor
-  GPIO_PinState User_BtnGet;
-  GPIO_PinState User_BtnGetPrevious;
-  extern GPIO_PinState USER_Btn_PinState;
-  #endif
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -171,19 +165,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    User_BtnGet = USER_Btn_PinState;
-    if(User_BtnGet == GPIO_PIN_SET && User_BtnGetPrevious == GPIO_PIN_RESET)
-    {
-      printf("GPIO_PIN_SET\r\n");
-    }
-    else if(User_BtnGet == GPIO_PIN_RESET && User_BtnGetPrevious == GPIO_PIN_SET)
-    {
-      printf("GPIO_PIN_RESET\r\n");
-    }
-    User_BtnGetPrevious = User_BtnGet;
-    
-    HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-    HAL_Delay(100);
   }
   /* USER CODE END 3 */
 }
@@ -425,10 +406,35 @@ int __io_putchar(int ch)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+
+#if 1
+  // 20200320 taylor
+  GPIO_PinState User_BtnGet;
+  GPIO_PinState User_BtnGetPrevious;
+  extern GPIO_PinState USER_Btn_PinState;
+#endif
+
   /* Infinite loop */
   for(;;)
   {
+  #if 1
+    // 20200320 taylor
+    User_BtnGet = USER_Btn_PinState;
+    if(User_BtnGet == GPIO_PIN_SET && User_BtnGetPrevious == GPIO_PIN_RESET)
+    {
+      printf("GPIO_PIN_SET\r\n");
+    }
+    else if(User_BtnGet == GPIO_PIN_RESET && User_BtnGetPrevious == GPIO_PIN_SET)
+    {
+      printf("GPIO_PIN_RESET\r\n");
+    }
+    User_BtnGetPrevious = User_BtnGet;
+    
+    HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+    osDelay(100);
+  #else
     osDelay(1);
+  #endif
   }
   /* USER CODE END 5 */ 
 }
