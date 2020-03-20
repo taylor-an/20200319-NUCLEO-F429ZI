@@ -57,6 +57,16 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* USER CODE BEGIN PV */
 
+#if 1
+// 20200320 taylor
+/* Definitions for inputTask */
+osThreadId_t inputTaskHandle;
+const osThreadAttr_t inputTask_attributes = {
+  .name = "inputTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 128 * 4
+};
+#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -73,6 +83,10 @@ void StartDefaultTask(void *argument);
 int __io_putchar(int ch);
 #endif
 
+#if 1
+// 20200320 taylor
+void InputTask(void *argument);
+#endif
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -152,6 +166,10 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  #if 1
+  // 20200320 taylor
+  inputTaskHandle = osThreadNew(InputTask, NULL, &inputTask_attributes);
+  #endif
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -406,6 +424,27 @@ int __io_putchar(int ch)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END 5 */ 
+}
+
+#if 1
+// 20200320 taylor
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used 
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void InputTask(void *argument)
+{
+  /* USER CODE BEGIN 5 */
 
 #if 1
   // 20200320 taylor
@@ -417,7 +456,6 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-  #if 1
     // 20200320 taylor
     User_BtnGet = USER_Btn_PinState;
     if(User_BtnGet == GPIO_PIN_SET && User_BtnGetPrevious == GPIO_PIN_RESET)
@@ -432,12 +470,10 @@ void StartDefaultTask(void *argument)
     
     HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
     osDelay(100);
-  #else
-    osDelay(1);
-  #endif
   }
   /* USER CODE END 5 */ 
 }
+#endif
 
 /**
   * @brief  This function is executed in case of error occurrence.
