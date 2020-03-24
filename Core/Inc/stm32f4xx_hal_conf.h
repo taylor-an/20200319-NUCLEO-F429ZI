@@ -209,13 +209,13 @@
 #define PHY_JABBER_DETECTION            ((uint16_t)0x0002U)  /*!< Jabber condition detected            */
   
 /* Section 4: Extended PHY Registers */
-#define PHY_SR                          ((uint16_t)0x1FU)    /*!< PHY status register Offset                      */
+#define PHY_SR                          ((uint16_t)0xF1)    /*!< PHY status register Offset                      */
 
 #define PHY_SPEED_STATUS                ((uint16_t)0x0004U)  /*!< PHY Speed mask                                  */
 #define PHY_DUPLEX_STATUS               ((uint16_t)0x0010U)  /*!< PHY Duplex mask                                 */
 
 #define PHY_ISFR                        ((uint16_t)0x001DU)    /*!< PHY Interrupt Source Flag register Offset   */
-#define PHY_ISFR_INT4                   ((uint16_t)0x000BU)  /*!< PHY Link down inturrupt       */  
+#define PHY_ISFR_INT4                   ((uint16_t)0x0010U)  /*!< PHY Link down inturrupt       */  
 
 /* ################## SPI peripheral configuration ########################## */
 

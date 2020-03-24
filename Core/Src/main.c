@@ -47,17 +47,18 @@ UART_HandleTypeDef huart3;
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
-};
+osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
 
 #if 1
+// 20200324 taylor
+// FreeRTOS CMSIS V1
+
+osThreadId inputTaskHandle;
+#else
 // 20200320 taylor
+// FreeRTOS CMSIS V2
+
 /* Definitions for inputTask */
 osThreadId_t inputTaskHandle;
 const osThreadAttr_t inputTask_attributes = {
@@ -73,7 +74,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
-void StartDefaultTask(void *argument);
+void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 #if 1
@@ -138,9 +139,6 @@ int main(void)
 
   /* USER CODE END 2 */
 
-  /* Init scheduler */
-  osKernelInitialize();
-
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -158,13 +156,22 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* definition and creation of defaultTask */
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 640);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   #if 1
+  // 20200324 taylor
+  // FreeRTOS CMSIS V1
+  
+  osThreadDef(InputTask, InputTask, osPriorityNormal, 0, 128);
+  inputTaskHandle = osThreadCreate(osThread(InputTask), NULL);
+  #else
   // 20200320 taylor
+  // FreeRTOS CMSIS V2
+  
   inputTaskHandle = osThreadNew(InputTask, NULL, &inputTask_attributes);
   #endif
   /* USER CODE END RTOS_THREADS */
@@ -418,7 +425,7 @@ void InputTask(void *argument)
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+void StartDefaultTask(void const * argument)
 {
   /* init code for LWIP */
   MX_LWIP_Init();

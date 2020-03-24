@@ -474,3 +474,7 @@ Debug/Middlewares/Third_Party/LwIP/src/core/ipv4/ip4_addr.o
 Debug/Middlewares/Third_Party/LwIP/src/core/ipv4/ip4_addr.d
 Debug/Middlewares/Third_Party/LwIP/src/core/ipv4/ip4.su
 Debug/Middlewares/Third_Party/LwIP/src/core/ipv4/autoip.d
+Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.su
+Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.o
+Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/subdir.mk
+Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.d

@@ -68,7 +68,7 @@
 /*----- Value in opt.h for TCPIP_THREAD_STACKSIZE: 0 -----*/
 #define TCPIP_THREAD_STACKSIZE 1024
 /*----- Value in opt.h for TCPIP_THREAD_PRIO: 1 -----*/
-#define TCPIP_THREAD_PRIO 24
+#define TCPIP_THREAD_PRIO osPriorityNormal
 /*----- Value in opt.h for TCPIP_MBOX_SIZE: 0 -----*/
 #define TCPIP_MBOX_SIZE 6
 /*----- Value in opt.h for SLIPIF_THREAD_STACKSIZE: 0 -----*/
@@ -113,8 +113,10 @@
 #define ETHARP_DEBUG LWIP_DBG_ON
 /*----- Default Value for NETIF_DEBUG: LWIP_DBG_OFF ---*/
 #define NETIF_DEBUG LWIP_DBG_ON
-/*----- Default Value for PBUF_DEBUG: LWIP_DBG_OFF ---*/
-#define PBUF_DEBUG LWIP_DBG_ON
+/*----- Default Value for API_LIB_DEBUG: LWIP_DBG_OFF ---*/
+#define API_LIB_DEBUG LWIP_DBG_ON
+/*----- Default Value for API_MSG_DEBUG: LWIP_DBG_OFF ---*/
+#define API_MSG_DEBUG LWIP_DBG_ON
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
 
