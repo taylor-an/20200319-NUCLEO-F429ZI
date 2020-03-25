@@ -76,8 +76,12 @@ void MX_LWIP_Init(void)
     netif_set_down(&gnetif);
   }
 
+  #if 0
+  // 20200325 taylor
+  
   /* Start DHCP negotiation for a network interface (IPv4) */
   dhcp_start(&gnetif);
+  #endif
 
 /* USER CODE BEGIN 3 */
 

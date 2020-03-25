@@ -23,6 +23,11 @@
 #include "cmsis_os.h"
 #include "lwip.h"
 
+#if 1
+// 20200325 taylor
+
+#include "app_ethernet.h"
+#endif
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -67,6 +72,13 @@ const osThreadAttr_t inputTask_attributes = {
   .stack_size = 128 * 4
 };
 #endif
+
+#if 1
+// 2020325 taylor
+
+struct netif main_netif;
+#endif
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -416,6 +428,47 @@ void InputTask(void *argument)
 }
 #endif
 
+#if 1
+// 20200325 taylor
+
+/**
+  * @brief  Initializes the lwIP stack
+  * @param  None
+  * @retval None
+  */
+static void Netif_Config(void)
+{ 
+  ip_addr_t ipaddr;
+  ip_addr_t netmask;
+  ip_addr_t gw;
+ 
+#ifdef USE_DHCP
+  ip_addr_set_zero_ip4(&ipaddr);
+  ip_addr_set_zero_ip4(&netmask);
+  ip_addr_set_zero_ip4(&gw);
+#else
+  IP_ADDR4(&ipaddr,IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3);
+  IP_ADDR4(&netmask,NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
+  IP_ADDR4(&gw,GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
+#endif /* USE_DHCP */
+  
+  netif_add(&main_netif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &tcpip_input);
+  
+  /*  Registers the default network interface. */
+  netif_set_default(&main_netif);
+  
+  if (netif_is_link_up(&main_netif))
+  {
+    /* When the netif is fully configured this function must be called.*/
+    netif_set_up(&main_netif);
+  }
+  else
+  {
+    /* When the netif link is down this function must be called */
+    netif_set_down(&main_netif);
+  }
+}
+#endif
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -428,8 +481,33 @@ void InputTask(void *argument)
 void StartDefaultTask(void const * argument)
 {
   /* init code for LWIP */
+  #if 0
+  // 20200325 taylor
+  
   MX_LWIP_Init();
+  #endif
   /* USER CODE BEGIN 5 */
+
+  #if 1
+  // 20200325 taylor
+  
+  /* Create tcp_ip stack thread */
+  tcpip_init(NULL, NULL);
+
+  /* Initialize the LwIP stack */
+  Netif_Config();
+
+  /* Notify user about the network interface config */
+  User_notification(&main_netif);
+
+  #ifdef USE_DHCP
+
+  osThreadDef(DHCP, DHCP_thread, osPriorityBelowNormal, 0, configMINIMAL_STACK_SIZE * 2);
+  osThreadCreate (osThread(DHCP), &main_netif);
+  #endif
+  
+  #endif
+  
   /* Infinite loop */
   for(;;)
   {
