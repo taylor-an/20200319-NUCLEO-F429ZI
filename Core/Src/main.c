@@ -169,7 +169,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 640);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 6);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -178,7 +178,7 @@ int main(void)
   // 20200324 taylor
   // FreeRTOS CMSIS V1
   
-  osThreadDef(InputTask, InputTask, osPriorityNormal, 0, 128);
+  osThreadDef(InputTask, InputTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
   inputTaskHandle = osThreadCreate(osThread(InputTask), NULL);
   #else
   // 20200320 taylor
@@ -497,13 +497,28 @@ void StartDefaultTask(void const * argument)
   /* Initialize the LwIP stack */
   Netif_Config();
 
+  /* Initialize tcp echo server */
+  tcpecho_init();
+
+  /* Initialize udp echo server */
+  udpecho_init();
+  
   /* Notify user about the network interface config */
   User_notification(&main_netif);
 
   #ifdef USE_DHCP
 
   osThreadDef(DHCP, DHCP_thread, osPriorityBelowNormal, 0, configMINIMAL_STACK_SIZE * 2);
-  osThreadCreate (osThread(DHCP), &main_netif);
+  osThreadId DHCPTaskHandle = osThreadCreate (osThread(DHCP), &main_netif);
+  
+  if(DHCPTaskHandle == NULL)
+  {
+  #if 0
+    printf("DHCPTaskHandle == NULL\r\n");
+  #else
+    printf("%s(%d) : DHCPTaskHandle == NULL\r\n", __FILE__, __LINE__);
+  #endif
+  }
   #endif
   
   #endif

@@ -483,3 +483,9 @@ Debug/Core/Src/app_ethernet.o
 Debug/Core/Src/app_ethernet.d
 .settings/org.eclipse.cdt.codan.core.prefs
 20200319-NUCLEO-F429ZI.launch
+Debug/Core/Src/udpecho.su
+Debug/Core/Src/udpecho.o
+Debug/Core/Src/udpecho.d
+Debug/Core/Src/tcpecho.su
+Debug/Core/Src/tcpecho.o
+Debug/Core/Src/tcpecho.d
