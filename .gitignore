@@ -489,3 +489,6 @@ Debug/Core/Src/udpecho.d
 Debug/Core/Src/tcpecho.su
 Debug/Core/Src/tcpecho.o
 Debug/Core/Src/tcpecho.d
+Debug/Core/Src/stm32f4xx_hal_timebase_tim.o
+Debug/Core/Src/stm32f4xx_hal_timebase_tim.d
+Debug/Core/Src/stm32f4xx_hal_timebase_tim.su
