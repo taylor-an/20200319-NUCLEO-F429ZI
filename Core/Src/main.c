@@ -178,7 +178,7 @@ int main(void)
   // 20200324 taylor
   // FreeRTOS CMSIS V1
   
-  osThreadDef(InputTask, InputTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE);
+  osThreadDef(InputTask, InputTask, osPriorityNormal, 0, configMINIMAL_STACK_SIZE * 2);
   inputTaskHandle = osThreadCreate(osThread(InputTask), NULL);
   #else
   // 20200320 taylor
@@ -414,6 +414,28 @@ void InputTask(void *argument)
     if(User_BtnGet == GPIO_PIN_SET && User_BtnGetPrevious == GPIO_PIN_RESET)
     {
       printf("GPIO_PIN_SET\r\n");
+
+      #if 1
+      // 20200327 taylor
+      
+      ip_addr_t resolved;
+      #if 1
+      if(ERR_OK != netconn_gethostbyname("wizwiki.net", &resolved))
+      #else
+      if(ERR_OK != dns_gethostbyname("wizwiki.net", &resolved, NULL, NULL))
+      #endif
+      {
+        printf("wizwiki.net dns failed\r\n");
+      }
+      else
+      {
+        LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("The wizwiki.net Ip address is %"U16_F".%"U16_F".%"U16_F".%"U16_F"\r\n",
+        ip4_addr1_16(&resolved),
+        ip4_addr2_16(&resolved),
+        ip4_addr3_16(&resolved),
+        ip4_addr4_16(&resolved)));
+      }
+      #endif
     }
     else if(User_BtnGet == GPIO_PIN_RESET && User_BtnGetPrevious == GPIO_PIN_SET)
     {
