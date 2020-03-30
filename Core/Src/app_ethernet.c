@@ -121,48 +121,93 @@ void DHCP_thread(void const * argument)
         if (dhcp_supplied_address(netif)) 
         {
           DHCP_state = DHCP_ADDRESS_ASSIGNED;	
+
+          #if 1
+          // 20200330 taylor
           
-          #if 1
-          // 20200325 taylor
+          #if NETIF_DEBUG == LWIP_DBG_ON
+            #if 1
+            // 20200325 taylor
 
-          LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("netif: IP address of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\n",
-          &netif->name[0], &netif->name[1],
-          ip4_addr1_16(netif_ip4_addr(netif)),
-          ip4_addr2_16(netif_ip4_addr(netif)),
-          ip4_addr3_16(netif_ip4_addr(netif)),
-          ip4_addr4_16(netif_ip4_addr(netif))));
-          #endif
-
-          #if 1
-          // 20200327 taylor
-
-          LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("netif: Netmask of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\n",
-          &netif->name[0], &netif->name[1],
-          ip4_addr1_16(netif_ip4_netmask(netif)),
-          ip4_addr2_16(netif_ip4_netmask(netif)),
-          ip4_addr3_16(netif_ip4_netmask(netif)),
-          ip4_addr4_16(netif_ip4_netmask(netif))));
-
-          LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("netif: Gateway of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\n",
-          &netif->name[0], &netif->name[1],
-          ip4_addr1_16(netif_ip4_gw(netif)),
-          ip4_addr2_16(netif_ip4_gw(netif)),
-          ip4_addr3_16(netif_ip4_gw(netif)),
-          ip4_addr4_16(netif_ip4_gw(netif))));
-
-          for(i=0; i<DNS_MAX_SERVERS; i++)
-          {
-            dnsaddr = dns_getserver(i);
-
-            LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("netif: DNS%d of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\n",
-            i,
+            LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("netif: IP address of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\n",
             &netif->name[0], &netif->name[1],
-            ip4_addr1_16(dnsaddr),
-            ip4_addr2_16(dnsaddr),
-            ip4_addr3_16(dnsaddr),
-            ip4_addr4_16(dnsaddr)));
-          }
-          LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("====================================\r\n"));
+            ip4_addr1_16(netif_ip4_addr(netif)),
+            ip4_addr2_16(netif_ip4_addr(netif)),
+            ip4_addr3_16(netif_ip4_addr(netif)),
+            ip4_addr4_16(netif_ip4_addr(netif))));
+            #endif
+
+            #if 1
+            // 20200327 taylor
+
+            LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("netif: Netmask of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\n",
+            &netif->name[0], &netif->name[1],
+            ip4_addr1_16(netif_ip4_netmask(netif)),
+            ip4_addr2_16(netif_ip4_netmask(netif)),
+            ip4_addr3_16(netif_ip4_netmask(netif)),
+            ip4_addr4_16(netif_ip4_netmask(netif))));
+
+            LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("netif: Gateway of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\n",
+            &netif->name[0], &netif->name[1],
+            ip4_addr1_16(netif_ip4_gw(netif)),
+            ip4_addr2_16(netif_ip4_gw(netif)),
+            ip4_addr3_16(netif_ip4_gw(netif)),
+            ip4_addr4_16(netif_ip4_gw(netif))));
+
+            for(i=0; i<DNS_MAX_SERVERS; i++)
+            {
+              dnsaddr = dns_getserver(i);
+
+              LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("netif: DNS%d of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\n",
+              i,
+              &netif->name[0], &netif->name[1],
+              ip4_addr1_16(dnsaddr),
+              ip4_addr2_16(dnsaddr),
+              ip4_addr3_16(dnsaddr),
+              ip4_addr4_16(dnsaddr)));
+            }
+            LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("====================================\r\n"));
+            #endif
+            
+          #else
+          
+            printf("=============================================================================\r\n");
+
+            printf("netif: IP address of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\r\n",
+                    &netif->name[0], &netif->name[1],
+                    ip4_addr1_16(netif_ip4_addr(netif)),
+                    ip4_addr2_16(netif_ip4_addr(netif)),
+                    ip4_addr3_16(netif_ip4_addr(netif)),
+                    ip4_addr4_16(netif_ip4_addr(netif)));
+            printf("netif: Netmask address of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\r\n",
+                    &netif->name[0], &netif->name[1],
+                    ip4_addr1_16(netif_ip4_netmask(netif)),
+                    ip4_addr2_16(netif_ip4_netmask(netif)),
+                    ip4_addr3_16(netif_ip4_netmask(netif)),
+                    ip4_addr4_16(netif_ip4_netmask(netif)));
+            printf("netif: Gateway address of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\r\n",
+                    &netif->name[0], &netif->name[1],
+                    ip4_addr1_16(netif_ip4_gw(netif)),
+                    ip4_addr2_16(netif_ip4_gw(netif)),
+                    ip4_addr3_16(netif_ip4_gw(netif)),
+                    ip4_addr4_16(netif_ip4_gw(netif)));
+            
+            for(i=0; i<DNS_MAX_SERVERS; i++)
+            {
+              dnsaddr = dns_getserver(i);
+
+              
+              printf("netif: DNS%d address of interface %c%c set to %"U16_F".%"U16_F".%"U16_F".%"U16_F"\r\n",
+                      i,
+                      &netif->name[0], &netif->name[1],
+                      ip4_addr1_16(dnsaddr),
+                      ip4_addr2_16(dnsaddr),
+                      ip4_addr3_16(dnsaddr),
+                      ip4_addr4_16(dnsaddr));
+            }
+
+            printf("=============================================================================\r\n");
+          #endif
           #endif
         }
         else
