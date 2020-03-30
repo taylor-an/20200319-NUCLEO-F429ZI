@@ -109,14 +109,6 @@
 #define CHECKSUM_CHECK_ICMP 0
 /*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
 #define CHECKSUM_CHECK_ICMP6 0
-/*----- Default Value for ETHARP_DEBUG: LWIP_DBG_OFF ---*/
-#define ETHARP_DEBUG LWIP_DBG_ON
-/*----- Default Value for NETIF_DEBUG: LWIP_DBG_OFF ---*/
-#define NETIF_DEBUG LWIP_DBG_ON
-/*----- Default Value for API_LIB_DEBUG: LWIP_DBG_OFF ---*/
-#define API_LIB_DEBUG LWIP_DBG_ON
-/*----- Default Value for API_MSG_DEBUG: LWIP_DBG_OFF ---*/
-#define API_MSG_DEBUG LWIP_DBG_ON
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
 

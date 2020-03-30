@@ -429,11 +429,19 @@ void InputTask(void *argument)
       }
       else
       {
+        #if NETIF_DEBUG == LWIP_DBG_ON
         LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("The wizwiki.net Ip address is %"U16_F".%"U16_F".%"U16_F".%"U16_F"\r\n",
         ip4_addr1_16(&resolved),
         ip4_addr2_16(&resolved),
         ip4_addr3_16(&resolved),
         ip4_addr4_16(&resolved)));
+        #else
+        printf("The wizwiki.net Ip address is %"U16_F".%"U16_F".%"U16_F".%"U16_F"\r\n",
+        ip4_addr1_16(&resolved),
+        ip4_addr2_16(&resolved),
+        ip4_addr3_16(&resolved),
+        ip4_addr4_16(&resolved));
+        #endif
       }
       #endif
     }
