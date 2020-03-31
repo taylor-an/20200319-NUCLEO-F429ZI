@@ -87,8 +87,14 @@
 #define DEFAULT_ACCEPTMBOX_SIZE 6
 /*----- Value in opt.h for RECV_BUFSIZE_DEFAULT: INT_MAX -----*/
 #define RECV_BUFSIZE_DEFAULT 2000000000
-/*----- Value in opt.h for LWIP_STATS: 1 -----*/
-#define LWIP_STATS 0
+/*----- Default Value for LWIP_SNMP: 0 ---*/
+#define LWIP_SNMP 1
+/*----- Default Value for SNMP_USE_NETCONN: 0 ---*/
+#define SNMP_USE_NETCONN 1
+/*----- Default Value for SNMP_USE_RAW: 1 ---*/
+#define SNMP_USE_RAW 0
+/*----- Value in opt.h for MIB2_STATS: 0 or SNMP_LWIP_MIB2 -----*/
+#define MIB2_STATS 1
 /*----- Value in opt.h for CHECKSUM_GEN_IP: 1 -----*/
 #define CHECKSUM_GEN_IP 0
 /*----- Value in opt.h for CHECKSUM_GEN_UDP: 1 -----*/
@@ -109,6 +115,10 @@
 #define CHECKSUM_CHECK_ICMP 0
 /*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
 #define CHECKSUM_CHECK_ICMP6 0
+/*----- Default Value for SNMP_DEBUG: LWIP_DBG_OFF ---*/
+#define SNMP_DEBUG LWIP_DBG_ON
+/*----- Default Value for SNMP_MIB_DEBUG: LWIP_DBG_OFF ---*/
+#define SNMP_MIB_DEBUG LWIP_DBG_ON
 /*-----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
 

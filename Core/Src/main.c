@@ -532,6 +532,12 @@ void StartDefaultTask(void const * argument)
 
   /* Initialize udp echo server */
   udpecho_init();
+
+  #if 1
+  // 20200330 taylor
+  
+  snmp_init();
+  #endif
   
   /* Notify user about the network interface config */
   User_notification(&main_netif);
