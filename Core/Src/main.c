@@ -79,6 +79,22 @@ const osThreadAttr_t inputTask_attributes = {
 struct netif main_netif;
 #endif
 
+#if 1
+// 20200401 taylor
+
+static const struct snmp_mib *my_snmp_mibs[] = { &mib2, &user_MIB };
+u8_t * syscontact_str = (u8_t*) "root";
+u16_t  syscontact_len = sizeof("root");
+u8_t * syslocation_str = (u8_t*) "Milandr LWIP SNMP";
+u16_t  syslocation_len = sizeof("Milandr LWIP SNMP");
+u8_t * sysname_str = (u8_t*) "Milandr";
+u16_t  sysname_len = sizeof("Milandr");
+u16_t  bufsize = 64;
+const u8_t * sysdescr = (u8_t*) "minimal_example";
+const u16_t  sysdescr_len = sizeof("minimal_example");
+#define TRAP_DESTINATION_0_INDEX    0
+#endif
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -537,25 +553,25 @@ void StartDefaultTask(void const * argument)
   // 20200330 taylor
   
   #if 1
-  // 20200331 taylor
+  // 20200401 taylor
 
   // The following function calls must bu made in your program to actually get the SNMP agent running.
   // Before 
-  snmp_mib2_set_syscontact();
-  snmp_mib2_set_syslocation();
-  snmp_set_auth_traps_enabled();
+  snmp_mib2_set_syscontact(syscontact_str, &syscontact_len, bufsize);
+  snmp_mib2_set_syslocation(syslocation_str, &syslocation_len, bufsize);
+  snmp_set_auth_traps_enabled(true);
 
   // 
-  snmp_set_write_callback();
+  //snmp_set_write_callback();
 
-  snmp_mib2_set_sysdescr();
+  snmp_mib2_set_sysdescr(sysdescr, &sysdescr_len);
   snmp_set_device_enterprise_oid();
-  snmp_mib2_set_sysname();
+  snmp_mib2_set_sysname(sysname_str, &sysname_len, bufsize);
 
-  snmp_trap_dst_enable();
-  snmp_trap_dst_ip_set();
+  snmp_trap_dst_enable(TRAP_DESTINATION_0_INDEX, true);
+  snmp_trap_dst_ip_set(TRAP_DESTINATION_0_INDEX, &(p_netif->gw));
 
-  snmp_set_mibs();
+  snmp_set_mibs(my_snmp_mibs, LWIP_ARRAYSIZE(my_snmp_mibs));
   
   #endif
   snmp_init();
