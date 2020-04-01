@@ -28,6 +28,19 @@
 
 #include "app_ethernet.h"
 #endif
+
+#if 1
+// 20200401 taylor
+
+#include "UserMIB.h"
+#include "lwip/apps/snmp_opts.h"
+#include "lwip/snmp.h"
+#include "lwip/apps/snmp.h"
+#include "lwip/apps/snmp_core.h"
+#include "lwip/apps/snmp_mib2.h"
+#include "lwip/apps/snmp_scalar.h"
+
+#endif
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -559,17 +572,17 @@ void StartDefaultTask(void const * argument)
   // Before 
   snmp_mib2_set_syscontact(syscontact_str, &syscontact_len, bufsize);
   snmp_mib2_set_syslocation(syslocation_str, &syslocation_len, bufsize);
-  snmp_set_auth_traps_enabled(true);
+  snmp_set_auth_traps_enabled(ENABLE);
 
   // 
   //snmp_set_write_callback();
 
   snmp_mib2_set_sysdescr(sysdescr, &sysdescr_len);
-  snmp_set_device_enterprise_oid();
+  //snmp_set_device_enterprise_oid();
   snmp_mib2_set_sysname(sysname_str, &sysname_len, bufsize);
 
-  snmp_trap_dst_enable(TRAP_DESTINATION_0_INDEX, true);
-  snmp_trap_dst_ip_set(TRAP_DESTINATION_0_INDEX, &(p_netif->gw));
+  snmp_trap_dst_enable(TRAP_DESTINATION_0_INDEX, ENABLE);
+  snmp_trap_dst_ip_set(TRAP_DESTINATION_0_INDEX, &(main_netif.gw));
 
   snmp_set_mibs(my_snmp_mibs, LWIP_ARRAYSIZE(my_snmp_mibs));
   

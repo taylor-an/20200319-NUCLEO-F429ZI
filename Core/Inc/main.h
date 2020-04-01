@@ -144,6 +144,13 @@ void Error_Handler(void);
 #define LD2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
+#if 1
+// 20200401 taylor
+
+#define ENABLE 1
+#define DISABLE 0
+#endif
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -559,3 +559,6 @@ Debug/Middlewares/Third_Party/LwIP/src/apps/snmp/snmp_raw.o
 Debug/Middlewares/Third_Party/LwIP/src/apps/snmp/snmp_mib2_snmp.d
 Debug/Middlewares/Third_Party/LwIP/src/apps/snmp/snmp_mib2_ip.su
 Debug/Middlewares/Third_Party/LwIP/src/apps/snmp/snmp_mib2_ip.o
+Debug/Core/Src/UserMIB.o
+Debug/Core/Src/UserMIB.d
+Debug/Core/Src/UserMIB.su
