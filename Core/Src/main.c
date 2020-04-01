@@ -536,6 +536,28 @@ void StartDefaultTask(void const * argument)
   #if 1
   // 20200330 taylor
   
+  #if 1
+  // 20200331 taylor
+
+  // The following function calls must bu made in your program to actually get the SNMP agent running.
+  // Before 
+  snmp_mib2_set_syscontact();
+  snmp_mib2_set_syslocation();
+  snmp_set_auth_traps_enabled();
+
+  // 
+  snmp_set_write_callback();
+
+  snmp_mib2_set_sysdescr();
+  snmp_set_device_enterprise_oid();
+  snmp_mib2_set_sysname();
+
+  snmp_trap_dst_enable();
+  snmp_trap_dst_ip_set();
+
+  snmp_set_mibs();
+  
+  #endif
   snmp_init();
   #endif
   
