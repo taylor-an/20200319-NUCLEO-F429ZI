@@ -115,6 +115,8 @@
 #define CHECKSUM_CHECK_ICMP 0
 /*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
 #define CHECKSUM_CHECK_ICMP6 0
+/*----- Default Value for NETIF_DEBUG: LWIP_DBG_OFF ---*/
+#define NETIF_DEBUG LWIP_DBG_ON
 /*----- Default Value for SNMP_DEBUG: LWIP_DBG_OFF ---*/
 #define SNMP_DEBUG LWIP_DBG_ON
 /*----- Default Value for SNMP_MIB_DEBUG: LWIP_DBG_OFF ---*/

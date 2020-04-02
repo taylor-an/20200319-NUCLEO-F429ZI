@@ -74,6 +74,11 @@ const char *snmp_community_trap = SNMP_COMMUNITY_TRAP;
 snmp_write_callback_fct snmp_write_callback     = NULL;
 void                   *snmp_write_callback_arg = NULL;
 
+#define PRINTLINE() printf("\r\n%s(%d)\r\n", __FILE__, __LINE__)
+#define PRINTVAR(x) printf("\r\n%s(%d) 0x%x(%d)\r\n", __FILE__, __LINE__, x, x)
+#define PRINTDVAR(x) printf("\r\n%s(%d) %d\r\n", __FILE__, __LINE__, x)
+#define PRINTHVAR(x) printf("\r\n%s(%d) 0x%x\r\n", __FILE__, __LINE__, x)
+
 #if LWIP_SNMP_CONFIGURE_VERSIONS
 
 static u8_t v1_enabled = 1;
@@ -282,23 +287,63 @@ snmp_receive(void *handle, struct pbuf *p, const ip_addr_t *source_ip, u16_t por
 
   snmp_stats.inpkts++;
 
+  #define DEBUG_SNMP_RECEIVE
+
+  #ifdef DEBUG_SNMP_RECEIVE
+  PRINTLINE();
+  #endif
+  
   err = snmp_parse_inbound_frame(&request);
+  #ifdef DEBUG_SNMP_RECEIVE
+  PRINTLINE();
+  #endif
   if (err == ERR_OK) {
+    #ifdef DEBUG_SNMP_RECEIVE
+    PRINTLINE();
+    #endif
     err = snmp_prepare_outbound_frame(&request);
+    #ifdef DEBUG_SNMP_RECEIVE
+    PRINTLINE();
+    PRINTVAR(err);
+    #endif
     if (err == ERR_OK) {
 
+      #ifdef DEBUG_SNMP_RECEIVE
+      PRINTLINE();
+      #endif
       if (request.error_status == SNMP_ERR_NOERROR) {
+        #ifdef DEBUG_SNMP_RECEIVE
+        PRINTLINE();
+        #endif
         /* only process frame if we do not already have an error to return (e.g. all readonly) */
         if (request.request_type == SNMP_ASN1_CONTEXT_PDU_GET_REQ) {
+          #ifdef DEBUG_SNMP_RECEIVE
+          PRINTLINE();
+          #endif
           err = snmp_process_get_request(&request);
         } else if (request.request_type == SNMP_ASN1_CONTEXT_PDU_GET_NEXT_REQ) {
+          #ifdef DEBUG_SNMP_RECEIVE
+          PRINTLINE();
+          #endif
           err = snmp_process_getnext_request(&request);
         } else if (request.request_type == SNMP_ASN1_CONTEXT_PDU_GET_BULK_REQ) {
+          #ifdef DEBUG_SNMP_RECEIVE
+          PRINTLINE();
+          #endif
           err = snmp_process_getbulk_request(&request);
         } else if (request.request_type == SNMP_ASN1_CONTEXT_PDU_SET_REQ) {
+          #ifdef DEBUG_SNMP_RECEIVE
+          PRINTLINE();
+          #endif
           err = snmp_process_set_request(&request);
         }
+        #ifdef DEBUG_SNMP_RECEIVE
+        PRINTLINE();
+        #endif
       }
+      #ifdef DEBUG_SNMP_RECEIVE
+      PRINTLINE();
+      #endif
 #if LWIP_SNMP_V3
       else {
         struct snmp_varbind vb;
@@ -361,25 +406,56 @@ snmp_receive(void *handle, struct pbuf *p, const ip_addr_t *source_ip, u16_t por
 #endif
 
       if (err == ERR_OK) {
+        #ifdef DEBUG_SNMP_RECEIVE
+        PRINTLINE();
+        #endif
         err = snmp_complete_outbound_frame(&request);
+        #ifdef DEBUG_SNMP_RECEIVE
+        PRINTLINE();
+        #endif
 
         if (err == ERR_OK) {
+          #ifdef DEBUG_SNMP_RECEIVE
+          PRINTLINE();
+          #endif
           err = snmp_sendto(request.handle, request.outbound_pbuf, request.source_ip, request.source_port);
+          #ifdef DEBUG_SNMP_RECEIVE
+          PRINTLINE();
+          #endif
 
           if ((request.request_type == SNMP_ASN1_CONTEXT_PDU_SET_REQ)
               && (request.error_status == SNMP_ERR_NOERROR)
               && (snmp_write_callback != NULL)) {
+              #ifdef DEBUG_SNMP_RECEIVE
+              PRINTLINE();
+              #endif
             /* raise write notification for all written objects */
             snmp_execute_write_callbacks(&request);
+            #ifdef DEBUG_SNMP_RECEIVE
+            PRINTLINE();
+            #endif
           }
         }
       }
     }
+    
+    #ifdef DEBUG_SNMP_RECEIVE
+    PRINTLINE();
+    #endif
 
     if (request.outbound_pbuf != NULL) {
+      #ifdef DEBUG_SNMP_RECEIVE
+      PRINTLINE();
+      #endif
       pbuf_free(request.outbound_pbuf);
     }
+    #ifdef DEBUG_SNMP_RECEIVE
+    PRINTLINE();
+    #endif
   }
+  #ifdef DEBUG_SNMP_RECEIVE
+  PRINTLINE();
+  #endif
 }
 
 static u8_t
@@ -775,21 +851,47 @@ snmp_parse_inbound_frame(struct snmp_request *request)
   snmpv3_priv_algo_t priv;
 #endif
 
+  //#define DEBUG_SNMP_PARSE_INBOUND_FRAME
+  
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   IF_PARSE_EXEC(snmp_pbuf_stream_init(&pbuf_stream, request->inbound_pbuf, 0, request->inbound_pbuf->tot_len));
 
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   /* decode main container consisting of version, community and PDU */
   IF_PARSE_EXEC(snmp_asn1_dec_tlv(&pbuf_stream, &tlv));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   IF_PARSE_ASSERT((tlv.type == SNMP_ASN1_TYPE_SEQUENCE) && (tlv.value_len == pbuf_stream.length));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   parent_tlv_value_len = tlv.value_len;
 
   /* decode version */
   IF_PARSE_EXEC(snmp_asn1_dec_tlv(&pbuf_stream, &tlv));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   IF_PARSE_ASSERT(tlv.type == SNMP_ASN1_TYPE_INTEGER);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   parent_tlv_value_len -= SNMP_ASN1_TLV_LENGTH(tlv);
   IF_PARSE_ASSERT(parent_tlv_value_len > 0);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
 
   IF_PARSE_EXEC(snmp_asn1_dec_s32t(&pbuf_stream, tlv.value_len, &s32_value));
 
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   if (((s32_value != SNMP_VERSION_1) &&
        (s32_value != SNMP_VERSION_2c)
 #if LWIP_SNMP_V3
@@ -800,10 +902,16 @@ snmp_parse_inbound_frame(struct snmp_request *request)
       || (!snmp_version_enabled(s32_value))
 #endif
      ) {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     /* unsupported SNMP version */
     snmp_stats.inbadversions++;
     return ERR_ARG;
   }
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   request->version = (u8_t)s32_value;
 
 #if LWIP_SNMP_V3
@@ -1129,18 +1237,36 @@ snmp_parse_inbound_frame(struct snmp_request *request)
   } else
 #endif
   {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     /* decode community */
     IF_PARSE_EXEC(snmp_asn1_dec_tlv(&pbuf_stream, &tlv));
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     IF_PARSE_ASSERT(tlv.type == SNMP_ASN1_TYPE_OCTET_STRING);
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     parent_tlv_value_len -= SNMP_ASN1_TLV_LENGTH(tlv);
     IF_PARSE_ASSERT(parent_tlv_value_len > 0);
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
 
     err = snmp_asn1_dec_raw(&pbuf_stream, tlv.value_len, request->community, &request->community_strlen, SNMP_MAX_COMMUNITY_STR_LEN);
     if (err == ERR_MEM) {
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* community string does not fit in our buffer -> its too long -> its invalid */
       request->community_strlen = 0;
       snmp_pbuf_stream_seek(&pbuf_stream, tlv.value_len);
     } else {
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       IF_PARSE_ASSERT(err == ERR_OK);
     }
     /* add zero terminator */
@@ -1149,32 +1275,57 @@ snmp_parse_inbound_frame(struct snmp_request *request)
 
   /* decode PDU type (next container level) */
   IF_PARSE_EXEC(snmp_asn1_dec_tlv(&pbuf_stream, &tlv));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   IF_PARSE_ASSERT(tlv.value_len <= pbuf_stream.length);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   request->inbound_padding_len = pbuf_stream.length - tlv.value_len;
   parent_tlv_value_len = tlv.value_len;
 
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   /* validate PDU type */
   switch (tlv.type) {
     case (SNMP_ASN1_CLASS_CONTEXT | SNMP_ASN1_CONTENTTYPE_CONSTRUCTED | SNMP_ASN1_CONTEXT_PDU_GET_REQ):
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* GetRequest PDU */
       snmp_stats.ingetrequests++;
       break;
     case (SNMP_ASN1_CLASS_CONTEXT | SNMP_ASN1_CONTENTTYPE_CONSTRUCTED | SNMP_ASN1_CONTEXT_PDU_GET_NEXT_REQ):
+      PRINTLINE();
       /* GetNextRequest PDU */
       snmp_stats.ingetnexts++;
       break;
     case (SNMP_ASN1_CLASS_CONTEXT | SNMP_ASN1_CONTENTTYPE_CONSTRUCTED | SNMP_ASN1_CONTEXT_PDU_GET_BULK_REQ):
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* GetBulkRequest PDU */
       if (request->version < SNMP_VERSION_2c) {
+        #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+        PRINTLINE();
+        #endif
         /* RFC2089: invalid, drop packet */
         return ERR_ARG;
       }
       break;
     case (SNMP_ASN1_CLASS_CONTEXT | SNMP_ASN1_CONTENTTYPE_CONSTRUCTED | SNMP_ASN1_CONTEXT_PDU_SET_REQ):
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* SetRequest PDU */
       snmp_stats.insetrequests++;
       break;
     default:
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* unsupported input PDU for this agent (no parse error) */
       LWIP_DEBUGF(SNMP_DEBUG, ("Unknown/Invalid SNMP PDU type received: %d", tlv.type)); \
       return ERR_ARG;
@@ -1184,23 +1335,41 @@ snmp_parse_inbound_frame(struct snmp_request *request)
 
   /* validate community (do this after decoding PDU type because we don't want to increase 'inbadcommunitynames' for wrong frame types */
   if (request->community_strlen == 0) {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     /* community string was too long or really empty*/
     snmp_stats.inbadcommunitynames++;
     snmp_authfail_trap();
     return ERR_ARG;
   } else if (request->request_type == SNMP_ASN1_CONTEXT_PDU_SET_REQ) {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     if (snmp_community_write[0] == 0) {
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* our write community is empty, that means all our objects are readonly */
       request->error_status = SNMP_ERR_NOTWRITABLE;
       request->error_index  = 1;
     } else if (strncmp(snmp_community_write, (const char *)request->community, SNMP_MAX_COMMUNITY_STR_LEN) != 0) {
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* community name does not match */
       snmp_stats.inbadcommunitynames++;
       snmp_authfail_trap();
       return ERR_ARG;
     }
   } else {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     if (strncmp(snmp_community, (const char *)request->community, SNMP_MAX_COMMUNITY_STR_LEN) != 0) {
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* community name does not match */
       snmp_stats.inbadcommunitynames++;
       snmp_authfail_trap();
@@ -1210,55 +1379,127 @@ snmp_parse_inbound_frame(struct snmp_request *request)
 
   /* decode request ID */
   IF_PARSE_EXEC(snmp_asn1_dec_tlv(&pbuf_stream, &tlv));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   IF_PARSE_ASSERT(tlv.type == SNMP_ASN1_TYPE_INTEGER);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   parent_tlv_value_len -= SNMP_ASN1_TLV_LENGTH(tlv);
   IF_PARSE_ASSERT(parent_tlv_value_len > 0);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
 
   IF_PARSE_EXEC(snmp_asn1_dec_s32t(&pbuf_stream, tlv.value_len, &request->request_id));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
 
   /* decode error status / non-repeaters */
   IF_PARSE_EXEC(snmp_asn1_dec_tlv(&pbuf_stream, &tlv));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   IF_PARSE_ASSERT(tlv.type == SNMP_ASN1_TYPE_INTEGER);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   parent_tlv_value_len -= SNMP_ASN1_TLV_LENGTH(tlv);
   IF_PARSE_ASSERT(parent_tlv_value_len > 0);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
 
   if (request->request_type == SNMP_ASN1_CONTEXT_PDU_GET_BULK_REQ) {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     IF_PARSE_EXEC(snmp_asn1_dec_s32t(&pbuf_stream, tlv.value_len, &request->non_repeaters));
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     if (request->non_repeaters < 0) {
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* RFC 1905, 4.2.3 */
       request->non_repeaters = 0;
     }
   } else {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     /* only check valid value, don't touch 'request->error_status', maybe a response error status was already set to above; */
     IF_PARSE_EXEC(snmp_asn1_dec_s32t(&pbuf_stream, tlv.value_len, &s32_value));
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     IF_PARSE_ASSERT(s32_value == SNMP_ERR_NOERROR);
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
   }
 
   /* decode error index / max-repetitions */
   IF_PARSE_EXEC(snmp_asn1_dec_tlv(&pbuf_stream, &tlv));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   IF_PARSE_ASSERT(tlv.type == SNMP_ASN1_TYPE_INTEGER);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   parent_tlv_value_len -= SNMP_ASN1_TLV_LENGTH(tlv);
   IF_PARSE_ASSERT(parent_tlv_value_len > 0);
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
 
   if (request->request_type == SNMP_ASN1_CONTEXT_PDU_GET_BULK_REQ) {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     IF_PARSE_EXEC(snmp_asn1_dec_s32t(&pbuf_stream, tlv.value_len, &request->max_repetitions));
     if (request->max_repetitions < 0) {
+      #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+      PRINTLINE();
+      #endif
       /* RFC 1905, 4.2.3 */
       request->max_repetitions = 0;
     }
   } else {
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     IF_PARSE_EXEC(snmp_asn1_dec_s32t(&pbuf_stream, tlv.value_len, &request->error_index));
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
     IF_PARSE_ASSERT(s32_value == 0);
+    #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+    PRINTLINE();
+    #endif
   }
 
   /* decode varbind-list type (next container level) */
   IF_PARSE_EXEC(snmp_asn1_dec_tlv(&pbuf_stream, &tlv));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   IF_PARSE_ASSERT((tlv.type == SNMP_ASN1_TYPE_SEQUENCE) && (tlv.value_len <= pbuf_stream.length));
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
 
   request->inbound_varbind_offset = pbuf_stream.offset;
   request->inbound_varbind_len    = pbuf_stream.length - request->inbound_padding_len;
   snmp_vb_enumerator_init(&(request->inbound_varbind_enumerator), request->inbound_pbuf, request->inbound_varbind_offset, request->inbound_varbind_len);
 
+  #ifdef DEBUG_SNMP_PARSE_INBOUND_FRAME
+  PRINTLINE();
+  #endif
   return ERR_OK;
 }
 
@@ -1270,31 +1511,95 @@ snmp_prepare_outbound_frame(struct snmp_request *request)
   struct snmp_asn1_tlv tlv;
   struct snmp_pbuf_stream *pbuf_stream = &(request->outbound_pbuf_stream);
 
+  #define DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+
   /* try allocating pbuf(s) for maximum response size */
   request->outbound_pbuf = pbuf_alloc(PBUF_TRANSPORT, 1472, PBUF_RAM);
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   if (request->outbound_pbuf == NULL) {
+    #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+    PRINTLINE();
+    #endif
     return ERR_MEM;
   }
 
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+
   snmp_pbuf_stream_init(pbuf_stream, request->outbound_pbuf, 0, request->outbound_pbuf->tot_len);
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
 
   /* 'Message' sequence */
   SNMP_ASN1_SET_TLV_PARAMS(tlv, SNMP_ASN1_TYPE_SEQUENCE, 3, 0);
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   OF_BUILD_EXEC( snmp_ans1_enc_tlv(pbuf_stream, &tlv) );
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
 
   /* version */
   SNMP_ASN1_SET_TLV_PARAMS(tlv, SNMP_ASN1_TYPE_INTEGER, 0, 0);
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   snmp_asn1_enc_s32t_cnt(request->version, &tlv.value_len);
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   OF_BUILD_EXEC( snmp_ans1_enc_tlv(pbuf_stream, &tlv) );
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   OF_BUILD_EXEC( snmp_asn1_enc_s32t(pbuf_stream, tlv.value_len, request->version) );
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
 
 #if LWIP_SNMP_V3
   if (request->version < SNMP_VERSION_3) {
 #endif
     /* community */
     SNMP_ASN1_SET_TLV_PARAMS(tlv, SNMP_ASN1_TYPE_OCTET_STRING, 0, request->community_strlen);
+
+    #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+    PRINTLINE();
+    #endif
+
     OF_BUILD_EXEC( snmp_ans1_enc_tlv(pbuf_stream, &tlv) );
+
+    #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+    PRINTLINE();
+    #endif
+    
     OF_BUILD_EXEC( snmp_asn1_enc_raw(pbuf_stream, request->community, request->community_strlen) );
+
+    #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+    PRINTLINE();
+    #endif
 #if LWIP_SNMP_V3
   } else {
     const char *id;
@@ -1428,10 +1733,18 @@ snmp_prepare_outbound_frame(struct snmp_request *request)
   }
 #endif
 
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   /* 'PDU' sequence */
   request->outbound_pdu_offset = pbuf_stream->offset;
   SNMP_ASN1_SET_TLV_PARAMS(tlv, request->request_out_type, 3, 0);
   OF_BUILD_EXEC( snmp_ans1_enc_tlv(pbuf_stream, &tlv) );
+
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif  
 
   /* request ID */
   SNMP_ASN1_SET_TLV_PARAMS(tlv, SNMP_ASN1_TYPE_INTEGER, 0, 0);
@@ -1439,24 +1752,44 @@ snmp_prepare_outbound_frame(struct snmp_request *request)
   OF_BUILD_EXEC( snmp_ans1_enc_tlv(pbuf_stream, &tlv) );
   OF_BUILD_EXEC( snmp_asn1_enc_s32t(pbuf_stream, tlv.value_len, request->request_id) );
 
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   /* error status */
   SNMP_ASN1_SET_TLV_PARAMS(tlv, SNMP_ASN1_TYPE_INTEGER, 0, 1);
   OF_BUILD_EXEC( snmp_ans1_enc_tlv(pbuf_stream, &tlv) );
   request->outbound_error_status_offset = pbuf_stream->offset;
   OF_BUILD_EXEC( snmp_pbuf_stream_write(pbuf_stream, 0) );
 
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   /* error index */
   SNMP_ASN1_SET_TLV_PARAMS(tlv, SNMP_ASN1_TYPE_INTEGER, 0, 1);
   OF_BUILD_EXEC( snmp_ans1_enc_tlv(pbuf_stream, &tlv) );
   request->outbound_error_index_offset = pbuf_stream->offset;
   OF_BUILD_EXEC( snmp_pbuf_stream_write(pbuf_stream, 0) );
 
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   /* 'VarBindList' sequence */
   SNMP_ASN1_SET_TLV_PARAMS(tlv, SNMP_ASN1_TYPE_SEQUENCE, 3, 0);
   OF_BUILD_EXEC( snmp_ans1_enc_tlv(pbuf_stream, &tlv) );
 
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   request->outbound_varbind_offset = pbuf_stream->offset;
 
+  #ifdef DEBUG_SNMP_PREPARE_OUTBOUND_FRAME
+  PRINTLINE();
+  #endif
+  
   return ERR_OK;
 }
 

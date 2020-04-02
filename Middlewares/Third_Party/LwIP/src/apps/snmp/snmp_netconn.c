@@ -44,6 +44,11 @@
 #include "lwip/sys.h"
 #include "lwip/prot/iana.h"
 
+#define PRINTLINE() printf("\r\n%s(%d)\r\n", __FILE__, __LINE__)
+#define PRINTVAR(x) printf("\r\n%s(%d) 0x%x(%d)\r\n", __FILE__, __LINE__, x, x)
+#define PRINTDVAR(x) printf("\r\n%s(%d) %d\r\n", __FILE__, __LINE__, x)
+#define PRINTHVAR(x) printf("\r\n%s(%d) 0x%x\r\n", __FILE__, __LINE__, x)
+
 /** SNMP netconn API worker thread */
 static void
 snmp_netconn_thread(void *arg)
@@ -65,15 +70,22 @@ snmp_netconn_thread(void *arg)
 
   snmp_traps_handle = conn;
 
+  PRINTLINE();
+
   do {
     err = netconn_recv(conn, &buf);
 
     if (err == ERR_OK) {
+      PRINTLINE();
+      printf("err == ERR_OK\r\n");
       snmp_receive(conn, buf->p, &buf->addr, buf->port);
+      PRINTLINE();
     }
 
     if (buf != NULL) {
+      PRINTLINE();
       netbuf_delete(buf);
+      PRINTLINE();
     }
   } while (1);
 }
